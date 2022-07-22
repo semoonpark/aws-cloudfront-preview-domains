@@ -1,8 +1,8 @@
 locals {
-  domain_name     = "example.com"
-  cdn_domain_name = "cdn.${local.domain_name}"
-  wildcard_domain = "*.${local.cdn_domain_name}"
-  bucket_name     = "example-test-webapp"
+  domain_name     = "stg.queenit.kr"
+  product_domain_name = "seller.${local.domain_name}"
+  wildcard_domain = "*.${local.product_domain_name}"
+  bucket_name     = "damoa-seller-admin-web-qa"
 }
 
 data "aws_route53_zone" "external" {
@@ -11,7 +11,7 @@ data "aws_route53_zone" "external" {
 
 # Part 1 - Create the SSL Certificate
 resource "aws_acm_certificate" "main" {
-  domain_name               = local.cdn_domain_name
+  domain_name               = local.product_domain_name
   subject_alternative_names = [local.wildcard_domain]
   validation_method         = "DNS"
 
@@ -79,7 +79,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   enabled             = true
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
-  aliases             = [local.cdn_domain_name, local.wildcard_domain]
+  aliases             = [local.product_domain_name, local.wildcard_domain]
 
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate.main.arn
@@ -151,7 +151,7 @@ resource "aws_route53_record" "wildcard_cdn" {
 }
 resource "aws_route53_record" "naked_cdn" {
   zone_id = data.aws_route53_zone.external.zone_id
-  name    = local.cdn_domain_name
+  name    = local.product_domain_name
   type    = "A"
 
   alias {
