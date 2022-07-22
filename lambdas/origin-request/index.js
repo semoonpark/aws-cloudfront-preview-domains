@@ -6,7 +6,7 @@ exports.handler = (event, context, callback) => {
     const branch = host.match(/^preview-([^\.]+)/)[1];
     request.origin.custom.path = `/${branch}`;
   } catch (e) {
-    request.origin.custom.path = `/master`;
+    request.origin.custom.path = `/develop`;
   }
 
   return callback(null, request);
